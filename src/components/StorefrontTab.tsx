@@ -888,6 +888,8 @@ const StorefrontTab: React.FC<StorefrontTabProps> = ({ history, onAdminClick, is
               Ofertas
             </span>
             <a href="https://meli.la/1i3KjhY" target="_blank" rel="noreferrer" className="cursor-pointer hover:text-slate-900">Celulares & Smartphones</a>
+            <a href="https://meli.la/1wNBYhP" target="_blank" rel="noreferrer" className="cursor-pointer hover:text-slate-900">Higiene Pessoal</a>
+            <a href="https://meli.la/1RsWmwo" target="_blank" rel="noreferrer" className="cursor-pointer hover:text-slate-900">Tênis</a>
             {onAdminClick && (
               <button 
                 onClick={onAdminClick}
