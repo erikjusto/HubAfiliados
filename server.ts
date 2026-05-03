@@ -917,9 +917,9 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
                 { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
               ]
             }
-          });
+          } as any);
           
-          const text = result.response?.text() || "";
+          const text = (result as any).text || (result as any).response?.text?.() || "";
           const jsonMatch = text.match(/\{.*\}/s);
           
           if (jsonMatch) {
@@ -953,9 +953,9 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
                 { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
               ]
             }
-          });
+          } as any);
           
-          const fallbackText = fallbackResult.response?.text() || "";
+          const fallbackText = (fallbackResult as any).text || (fallbackResult as any).response?.text?.() || "";
           const jsonMatch = fallbackText.match(/\{.*\}/s);
           if (jsonMatch) {
             const fallbackData = JSON.parse(jsonMatch[0]);
@@ -991,9 +991,9 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
             3. Identifique a hierarquia completa de categorias deste produto (ex: Tecnologia > Celulares > Smartphones).
             Retorne JSON: {"descricao_curta": "", "conteudo_html": "", "hierarquia": ["Pai", "Filho", "Neto"]}`,
             config: { responseMimeType: "application/json" }
-          });
+          } as any);
           
-          const seoText = seoResult.response?.text() || "";
+          const seoText = (seoResult as any).text || (seoResult as any).response?.text?.() || "";
           const seoMatch = seoText.match(/\{.*\}/s);
           if (seoMatch) {
             const seoData = JSON.parse(seoMatch[0]);
@@ -1293,7 +1293,7 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
                 { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
               ]
             }
-          });
+          } as any);
 
           if (!result) throw new Error('Gemini returned an empty result');
           
@@ -1303,14 +1303,15 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
           // Extração robusta de texto: tenta várias propriedades comuns em diferentes versões do SDK
           let generatedText = "";
           try {
-            if (typeof result.response?.text === 'function') {
-              generatedText = result.response.text();
-            } else if (result.response?.text) {
-              generatedText = result.response.text;
-            } else if (result.text) {
-              generatedText = result.text;
-            } else if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-              generatedText = result.candidates[0].content.parts[0].text;
+            const resAny = result as any;
+            if (typeof resAny.response?.text === 'function') {
+              generatedText = resAny.response.text();
+            } else if (resAny.response?.text) {
+              generatedText = resAny.response.text;
+            } else if (resAny.text) {
+              generatedText = resAny.text;
+            } else if (resAny.candidates?.[0]?.content?.parts?.[0]?.text) {
+              generatedText = resAny.candidates[0].content.parts[0].text;
             }
           } catch (e) {
             console.warn("Erro ao extrair texto via função .text(), tentando propriedade direta:", e);
