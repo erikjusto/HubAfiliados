@@ -1,12 +1,10 @@
 
 export interface GeminiConfig {
-  provider: 'gemini' | 'openai' | 'manus';
+  provider: 'gemini' | 'openai';
   apiKey: string; // Gemini API Key
   model: string;  // Gemini Model
   openaiApiKey: string;
   openaiModel: string;
-  manusApiKey: string;
-  manusModel: string;
   systemPrompt?: string;
 }
 
@@ -33,8 +31,6 @@ export const getGeminiConfig = (): GeminiConfig => {
       if (!config.provider) config.provider = 'gemini';
       if (!config.openaiModel) config.openaiModel = 'gpt-4o-mini';
       if (!config.openaiApiKey) config.openaiApiKey = '';
-      if (!config.manusModel) config.manusModel = 'manus-v1';
-      if (!config.manusApiKey) config.manusApiKey = '';
       if (!config.systemPrompt) config.systemPrompt = DEFAULT_SYSTEM_PROMPT;
       // Auto-fill API key from env if not set in localStorage
       if (!config.apiKey && import.meta.env.VITE_GEMINI_API_KEY) {
@@ -53,8 +49,6 @@ export const getGeminiConfig = (): GeminiConfig => {
     model: 'gemini-2.5-flash',
     openaiApiKey: '',
     openaiModel: 'gpt-4o-mini',
-    manusApiKey: '',
-    manusModel: 'manus-v1',
     systemPrompt: DEFAULT_SYSTEM_PROMPT
   };
 };

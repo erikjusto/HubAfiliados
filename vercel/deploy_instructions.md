@@ -17,7 +17,6 @@ Adicione as seguintes chaves nas configurações do projeto no Vercel (**Project
 |---|---|
 | `GEMINI_API_KEY` | Sua chave de API do Google AI Studio. |
 | `OPENAI_API_KEY` | Sua chave de API do OpenAI (Fallback caso exceda cota). |
-| `MANUS_API_KEY` | Sua chave de API do Manus (Opcional). |
 | `VITE_GEMINI_API_KEY` | Mesma chave do Gemini (usada no frontend se aplicável). |
 | `VITE_WOO_URL` | URL da sua loja WooCommerce (Ex: `https://shopifybrasil.com.br/`). |
 | `VITE_WOO_CK` | Chave Consumer Key do WooCommerce. |

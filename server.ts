@@ -1435,6 +1435,38 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
     }
   });
 
+  app.post('/api/git/test', async (req, res) => {
+    const { repoUrl, token } = req.body || {};
+
+    if (!repoUrl || !token) {
+      return res.status(400).json({ error: 'URL do repositório e Token são obrigatórios.' });
+    }
+
+    try {
+      const { execSync } = await import('child_process');
+
+      // Clean the repository URL to embed the token
+      let authenticatedUrl = repoUrl.trim();
+      if (authenticatedUrl.startsWith('https://')) {
+        authenticatedUrl = `https://${token}@${authenticatedUrl.replace('https://', '')}`;
+      } else if (authenticatedUrl.startsWith('http://')) {
+        authenticatedUrl = `https://${token}@${authenticatedUrl.replace('http://', '')}`;
+      }
+
+      // Execute git ls-remote to check connection
+      execSync(`git ls-remote ${authenticatedUrl}`, { stdio: 'pipe' });
+
+      res.json({ status: 'success', message: 'Conexão com o Git estabelecida com sucesso!' });
+    } catch (error: any) {
+      console.error('Erro ao testar Git:', error);
+      let errorMsg = error.message;
+      if (error.stderr) {
+        errorMsg += '\n' + error.stderr.toString();
+      }
+      res.status(500).json({ error: `Erro na conexão Git: ${errorMsg}` });
+    }
+  });
+
   app.post('/api/git/push', async (req, res) => {
     const { repoUrl, token, email, username } = req.body || {};
 

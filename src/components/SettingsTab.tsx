@@ -158,11 +158,12 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ config, onSave, onRefreshProd
 };
 
 const GitSettingsBlock: React.FC = () => {
-  const [repoUrl, setRepoUrl] = useState('');
+  const [repoUrl, setRepoUrl] = useState('https://github.com/erikjusto/HubAfiliados.git');
   const [token, setToken] = useState('');
-  const [username, setUsername] = useState('Erik');
+  const [username, setUsername] = useState('erikjusto');
   const [email, setEmail] = useState('erikjusto@gmail.com');
   const [syncing, setSyncing] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [gitStatus, setGitStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
 
   // Carregar dados salvos ao montar o componente
@@ -220,6 +221,41 @@ const GitSettingsBlock: React.FC = () => {
       setGitStatus({ type: 'error', msg: err.message || 'Falha na conexão com o servidor.' });
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleGitTest = async () => {
+    if (!repoUrl || !token) {
+      setGitStatus({ type: 'error', msg: 'URL do repositório e Token são obrigatórios para testar.' });
+      return;
+    }
+
+    setTesting(true);
+    setGitStatus(null);
+    try {
+      const response = await fetch('/api/git/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repoUrl, token })
+      });
+
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error(text || 'Resposta do servidor inválida');
+      }
+
+      if (response.ok) {
+        setGitStatus({ type: 'success', msg: data.message || 'Conexão com o Git estabelecida com sucesso!' });
+      } else {
+        setGitStatus({ type: 'error', msg: data.error || 'Erro ao testar conexão com o Git.' });
+      }
+    } catch (err: any) {
+      setGitStatus({ type: 'error', msg: err.message || 'Falha na conexão com o servidor.' });
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -296,18 +332,29 @@ const GitSettingsBlock: React.FC = () => {
         )}
 
         <div className="pt-2 flex flex-col gap-3">
-          <button 
-            onClick={handleSaveGitConfig}
-            disabled={!repoUrl || !token}
-            className="w-full bg-slate-100 text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-slate-200"
-          >
-            <CheckCircle2 className="w-5 h-5" />
-            Salvar Configurações do Git
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button 
+              onClick={handleSaveGitConfig}
+              disabled={!repoUrl || !token}
+              className="w-full bg-slate-100 text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-slate-200"
+            >
+              <CheckCircle2 className="w-5 h-5 text-slate-600" />
+              Salvar Dados
+            </button>
+
+            <button 
+              onClick={handleGitTest}
+              disabled={testing || syncing || !repoUrl || !token}
+              className="w-full bg-slate-100 text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-slate-200"
+            >
+              {testing ? <Loader2 className="w-5 h-5 animate-spin text-slate-600" /> : <RefreshCw className="w-5 h-5 text-slate-600" />}
+              {testing ? 'Testando...' : 'Testar Conexão Git'}
+            </button>
+          </div>
 
           <button 
             onClick={handleGitPush}
-            disabled={syncing || !repoUrl || !token}
+            disabled={syncing || testing || !repoUrl || !token}
             className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white font-extrabold py-3.5 rounded-xl hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg text-base transform hover:scale-[1.01] active:scale-[0.99] active:duration-75 tracking-wide"
           >
             {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Globe className="w-5 h-5 animate-pulse" />}
