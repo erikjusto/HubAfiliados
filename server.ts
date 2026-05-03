@@ -581,9 +581,14 @@ app.use(express.json());
           payload = JSON.parse(payload);
         } catch (e) {}
       }
-      const { config, endpoint, method, body } = payload || {};
+      let { config, endpoint, method, body } = payload || {};
 
-      if (!config || !config.url || !config.consumerKey || !config.consumerSecret) {
+      if (!config) config = {};
+      if (!config.url) config.url = process.env.WC_URL || process.env.VITE_WOO_URL || '';
+      if (!config.consumerKey) config.consumerKey = process.env.WC_CONSUMER_KEY || process.env.VITE_WOO_KEY || process.env.VITE_WOO_CK || '';
+      if (!config.consumerSecret) config.consumerSecret = process.env.WC_CONSUMER_SECRET || process.env.VITE_WOO_SECRET || process.env.VITE_WOO_CS || '';
+
+      if (!config.url || !config.consumerKey || !config.consumerSecret) {
         return res.status(400).json({ message: "Configuração do WooCommerce incompleta." });
       }
 
