@@ -7,6 +7,7 @@ import * as cheerio from 'cheerio';
 import { ML_CATEGORIES } from './src/constants.ts';
 import { mlAgentService } from './services/mlAgentService.ts';
 import { GoogleGenAI } from "@google/genai";
+import axios from 'axios';
 
 dotenv.config();
 
@@ -594,7 +595,6 @@ app.use(express.json());
       const auth = Buffer.from(`${config.consumerKey}:${config.consumerSecret}`).toString("base64");
 
       console.log(`WooCommerce Proxy Request: ${method || "GET"} ${apiUrl}`);
-      const axios = (await import("axios")).default;
       try {
         const response = await axios({
           url: apiUrl,
@@ -1158,7 +1158,6 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
     }
 
     try {
-      const axios = (await import("axios")).default;
       const testResponse = await axios({
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${serverKey}`,
         method: 'POST',
