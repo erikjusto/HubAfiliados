@@ -1563,15 +1563,6 @@ const StorefrontTab: React.FC<StorefrontTabProps> = ({ history, onAdminClick, is
           </div>
         </div>
         
-        {/* Bottom Line */}
-        <div className="border-t border-slate-100 py-6 px-8 bg-slate-50/50">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-slate-400 font-medium">
-            <p>© 2026 Metaminds Soluções Digitais - Somos parceiros Mercado Livre</p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-blue-600 transition-colors">Politica de Privacidade</a>
-            </div>
-          </div>
-        </div>
         {/* Benefits Bar */}
         <div className="bg-white border-t border-gray-200 py-8 hidden md:block relative z-20 shadow-sm mt-12">
           <div className="max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
@@ -1603,6 +1594,16 @@ const StorefrontTab: React.FC<StorefrontTabProps> = ({ history, onAdminClick, is
                 <p className="text-sm font-bold text-slate-800">Melhores marcas</p>
                 <p className="text-xs text-slate-500">Os melhores produtos do mercado</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Line */}
+        <div className="border-t border-slate-100 py-6 px-8 bg-slate-50/50">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-slate-400 font-medium">
+            <p>© 2026 Metaminds Soluções Digitais - Somos parceiros Mercado Livre</p>
+            <div className="flex items-center gap-4">
+              <a href="#" className="hover:text-blue-600 transition-colors">Politica de Privacidade</a>
             </div>
           </div>
         </div>
