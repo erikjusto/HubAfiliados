@@ -1561,40 +1561,7 @@ const StorefrontTab: React.FC<StorefrontTabProps> = ({ history, onAdminClick, is
           </div>
         </div>
         
-        {/* Benefits Bar */}
-        <div className="bg-white border-t border-gray-200 py-8 hidden md:block relative z-20 shadow-sm mt-12">
-          <div className="max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                <Truck className="w-7 h-7 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-800">Frete grátis com MercadoFull</p>
-                <p className="text-xs text-slate-500">Em milhões de produtos</p>
-              </div>
-            </div>
-            <div className="w-px h-10 bg-gray-200" />
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-7 h-7 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-800">Compra garantida</p>
-                <p className="text-xs text-slate-500">Receba o que esperava ou devolvemos</p>
-              </div>
-            </div>
-            <div className="w-px h-10 bg-gray-200" />
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                <Star className="w-7 h-7 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-800">Melhores marcas</p>
-                <p className="text-xs text-slate-500">Os melhores produtos do mercado</p>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Bottom Line */}
         <div className="border-t border-slate-100 py-6 px-8 bg-slate-50/50">
