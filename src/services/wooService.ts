@@ -300,7 +300,7 @@ export const getWooProducts = async (config: WooCommerceConfig): Promise<ImportR
   }
 
   try {
-    const products = await wooProxy(config, "/wp-json/wc/v3/products?per_page=100&status=publish");
+    const products = await wooProxy(config, "/wp-json/wc/v3/products?per_page=20&status=publish");
     
     return products.map((p: any) => {
       // Extract original price if available in meta or description (simplified)

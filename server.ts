@@ -594,28 +594,32 @@ app.use(express.json());
       const auth = Buffer.from(`${config.consumerKey}:${config.consumerSecret}`).toString("base64");
 
       console.log(`WooCommerce Proxy Request: ${method || "GET"} ${apiUrl}`);
-      const response = await fetch(apiUrl, {
-        method: method || "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${auth}`,
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-        },
-        body: body ? JSON.stringify(body) : undefined
-      });
-
-      const data = await response.json().catch(() => null);
-      
-      if (!response.ok) {
-        console.error(`WooCommerce API Error (${response.status}):`, data);
-        return res.status(response.status).json({
-          message: data?.message || `Erro ${response.status} na API do WooCommerce.`,
-          code: data?.code,
-          data: data?.data
+      const axios = (await import("axios")).default;
+      try {
+        const response = await axios({
+          url: apiUrl,
+          method: method || "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${auth}`,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+          },
+          data: body || undefined,
+          timeout: 9000
         });
+        
+        res.json(response.data);
+      } catch (axiosError: any) {
+        if (axiosError.response) {
+          console.error(`WooCommerce API Error (${axiosError.response.status}):`, axiosError.response.data);
+          return res.status(axiosError.response.status).json({
+            message: axiosError.response.data?.message || `Erro ${axiosError.response.status} na API do WooCommerce.`,
+            code: axiosError.response.data?.code,
+            data: axiosError.response.data?.data
+          });
+        }
+        throw axiosError;
       }
-
-      res.json(data);
     } catch (error: any) {
       console.error("Erro no proxy do WooCommerce:", error);
       res.status(500).json({ 
