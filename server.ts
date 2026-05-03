@@ -1158,13 +1158,16 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
     }
 
     try {
-      const ai = new GoogleGenAI({ apiKey: serverKey });
-      const testResult = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: 'Responda apenas: OK',
+      const axios = (await import("axios")).default;
+      const testResponse = await axios({
+        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${serverKey}`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        data: { contents: [{ parts: [{ text: "Responda apenas: OK" }] }] },
+        timeout: 8000
       });
-      
-      const text = testResult.text || testResult.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+      const text = testResponse.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
       
       return res.json({
         status: 'ok',
@@ -1175,8 +1178,18 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
         testResponse: text.trim(),
       });
     } catch (error: any) {
-      const isInvalid = error.message?.includes('API key') || error.message?.includes('invalid') || error.status === 400 || error.code === 401;
-      const isQuota = error.message?.includes('quota') || error.status === 'RESOURCE_EXHAUSTED' || error.code === 429;
+      console.error("Gemini status check error:", error.message);
+      const errResponseData = error.response?.data;
+      const errorMessage = errResponseData?.error?.message || error.message || '';
+
+      const isInvalid = errorMessage.toLowerCase().includes('api key') || 
+                        errorMessage.toLowerCase().includes('invalid') || 
+                        error.response?.status === 400 || 
+                        error.response?.status === 401;
+      const isQuota = errorMessage.toLowerCase().includes('quota') || 
+                      errorMessage.toLowerCase().includes('rate limit') || 
+                      errorMessage.toLowerCase().includes('resource_exhausted') || 
+                      error.response?.status === 429;
       
       return res.json({
         status: isInvalid ? 'invalid_key' : isQuota ? 'quota_exceeded' : 'error',
@@ -1187,8 +1200,8 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
           ? 'API Key inválida ou sem permissão.' 
           : isQuota 
           ? 'Cota da API excedida. Aguarde ou troque a chave.'
-          : `Erro ao conectar: ${error.message}`,
-        error: error.message,
+          : `Erro ao conectar: ${errorMessage}`,
+        error: errorMessage,
       });
     }
   });

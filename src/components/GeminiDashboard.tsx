@@ -32,7 +32,15 @@ const GeminiDashboard: React.FC = () => {
     setApiStatus({ status: 'loading', message: 'Verificando conexão com Google AI Studio...' });
     try {
       const res = await fetch('/api/gemini/status');
-      const data = await res.json();
+      const text = await res.text();
+      
+      let data: any;
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        throw new Error(text.slice(0, 80) || 'Resposta do servidor inválida.');
+      }
+
       setApiStatus({
         status: data.status,
         message: data.message,
