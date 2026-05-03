@@ -588,11 +588,15 @@ app.use(express.json());
       if (!config.consumerKey) config.consumerKey = process.env.WC_CONSUMER_KEY || process.env.VITE_WOO_KEY || process.env.VITE_WOO_CK || '';
       if (!config.consumerSecret) config.consumerSecret = process.env.WC_CONSUMER_SECRET || process.env.VITE_WOO_SECRET || process.env.VITE_WOO_CS || '';
 
+      config.url = String(config.url).trim();
+      config.consumerKey = String(config.consumerKey).trim();
+      config.consumerSecret = String(config.consumerSecret).trim();
+
       if (!config.url || !config.consumerKey || !config.consumerSecret) {
         return res.status(400).json({ message: "Configuração do WooCommerce incompleta." });
       }
 
-      let baseUrl = String(config.url).replace(/\/$/, "");
+      let baseUrl = config.url.replace(/\/$/, "");
       if (!baseUrl.startsWith("http")) {
         baseUrl = `https://${baseUrl}`;
       }
@@ -612,7 +616,7 @@ app.use(express.json());
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
           },
           data: body || undefined,
-          timeout: 9000
+          timeout: 7000
         });
         
         res.json(response.data);
