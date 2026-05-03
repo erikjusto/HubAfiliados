@@ -1510,26 +1510,6 @@ const StorefrontTab: React.FC<StorefrontTabProps> = ({ history, onAdminClick, is
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 mt-20">
-        <div className="max-w-7xl mx-auto py-12 px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center flex-shrink-0">
-              <Truck className="w-6 h-6 text-slate-400" />
-            </div>
-            <div>
-              <h4 className="font-bold text-slate-800">Frete grátis com MercadoFull para vários produtos</h4>
-              <p className="text-xs text-slate-500">Aproveite o benefício de frete grátis em milhares de itens selecionados.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center flex-shrink-0">
-              <ShieldCheck className="w-6 h-6 text-slate-400" />
-            </div>
-            <div>
-              <h4 className="font-bold text-slate-800">Segurança Garantida por Mercado Livre</h4>
-              <p className="text-xs text-slate-500">Sua compra está protegida do início ao fim com a tecnologia do Mercado Livre.</p>
-            </div>
-          </div>
-        </div>
         
         {/* Payment Methods */}
         <div className="border-t border-slate-100 py-8 px-8">
