@@ -494,7 +494,7 @@ export const ML_CATEGORY_ICONS: Record<string, string> = {
   "Antiguidades e Coleções": "https://loremflickr.com/300/300/antiques,collection",
   "Arte, Papelaria e Armarinho": "https://loremflickr.com/300/300/stationery,art",
   "Bebês": "https://loremflickr.com/300/300/baby,toys",
-  "Beleza e Cuidado Pessoal": "https://loremflickr.com/300/300/beauty,cosmetics",
+  "Beleza e Cuidado Pessoal": "https://cosmeticinnovation.com.br/wp-content/uploads/2022/01/BelezaInclusiva.jpg",
   "Brinquedos e Hobbies": "https://loremflickr.com/300/300/toys,hobby",
   "Calçados, Roupas e Bolsas": "https://loremflickr.com/300/300/fashion,clothes",
   "Casa, Móveis e Decoração": "https://loremflickr.com/300/300/home,furniture",
