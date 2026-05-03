@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .product-long-description {
+    @apply text-slate-700 leading-relaxed;
+  }
+
+  .product-long-description p,
+  .product-long-description .whitespace-pre-line {
+    @apply mb-6 text-lg;
+  }
+
+  .product-long-description h1,
+  .product-long-description h2,
+  .product-long-description h3,
+  .product-long-description h4 {
+    @apply font-bold text-slate-900 mt-10 mb-4;
+  }
+
+  .product-long-description h1 { @apply text-3xl; }
+  .product-long-description h2 { @apply text-2xl; }
+  .product-long-description h3 { @apply text-xl; }
+
+  .product-long-description ul,
+  .product-long-description ol {
+    @apply mb-6 pl-6 list-disc;
+  }
+
+  .product-long-description li {
+    @apply mb-2;
+  }
+
+  .product-long-description strong {
+    @apply font-bold text-slate-900;
+  }
+
+  .product-long-description img {
+    @apply rounded-xl shadow-sm my-8 max-w-full h-auto mx-auto;
+  }
+}

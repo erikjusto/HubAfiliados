@@ -1,0 +1,5 @@
+{
+  "name": "Hub de Afiliados",
+  "description": "Um painel moderno em React para extrair e importar produtos de qualquer URL como itens de afiliado, usando IA para extração de dados.",
+  "requestFramePermissions": []
+}
