@@ -591,7 +591,9 @@ app.use(express.json());
       if (!baseUrl.startsWith("http")) {
         baseUrl = `https://${baseUrl}`;
       }
-      const apiUrl = `${baseUrl}${endpoint}`;
+      let apiUrl = `${baseUrl}${endpoint}`;
+      const separator = apiUrl.includes("?") ? "&" : "?";
+      apiUrl = `${apiUrl}${separator}consumer_key=${config.consumerKey}&consumer_secret=${config.consumerSecret}`;
       const auth = Buffer.from(`${config.consumerKey}:${config.consumerSecret}`).toString("base64");
 
       console.log(`WooCommerce Proxy Request: ${method || "GET"} ${apiUrl}`);
