@@ -574,7 +574,13 @@ app.use(express.json());
   // WooCommerce Proxy
   app.post("/api/woo/proxy", async (req, res) => {
     try {
-      const { config, endpoint, method, body } = req.body || {};
+      let payload = req.body;
+      if (typeof payload === "string") {
+        try {
+          payload = JSON.parse(payload);
+        } catch (e) {}
+      }
+      const { config, endpoint, method, body } = payload || {};
 
       if (!config || !config.url || !config.consumerKey || !config.consumerSecret) {
         return res.status(400).json({ message: "Configuração do WooCommerce incompleta." });
@@ -1436,7 +1442,13 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
   });
 
   app.post('/api/git/test', async (req, res) => {
-    const { repoUrl, token } = req.body || {};
+    let payload = req.body;
+    if (typeof payload === "string") {
+      try {
+        payload = JSON.parse(payload);
+      } catch (e) {}
+    }
+    const { repoUrl, token } = payload || {};
 
     if (!repoUrl || !token) {
       return res.status(400).json({ error: 'URL do repositório e Token são obrigatórios.' });
@@ -1468,7 +1480,13 @@ Retorne APENAS um objeto JSON válido no seguinte formato:
   });
 
   app.post('/api/git/push', async (req, res) => {
-    const { repoUrl, token, email, username } = req.body || {};
+    let payload = req.body;
+    if (typeof payload === "string") {
+      try {
+        payload = JSON.parse(payload);
+      } catch (e) {}
+    }
+    const { repoUrl, token, email, username } = payload || {};
 
     if (!repoUrl || !token) {
       return res.status(400).json({ error: 'URL do repositório e Token são obrigatórios.' });
