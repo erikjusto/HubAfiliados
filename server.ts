@@ -621,15 +621,23 @@ app.use(express.json());
         
         res.json(response.data);
       } catch (axiosError: any) {
-        if (axiosError.response) {
-          console.error(`WooCommerce API Error (${axiosError.response.status}):`, axiosError.response.data);
-          return res.status(axiosError.response.status).json({
-            message: axiosError.response.data?.message || `Erro ${axiosError.response.status} na API do WooCommerce.`,
-            code: axiosError.response.data?.code,
-            data: axiosError.response.data?.data
-          });
+        console.error("Erro na chamada Axios do WooCommerce:", axiosError.message);
+        const status = axiosError.response?.status || 500;
+        let errorMessage = axiosError.message;
+        
+        if (axiosError.response?.data) {
+          if (typeof axiosError.response.data === "object") {
+            errorMessage = axiosError.response.data.message || errorMessage;
+          } else if (typeof axiosError.response.data === "string" && axiosError.response.data.includes("<html")) {
+            errorMessage = `O servidor WooCommerce retornou uma página HTML (Erro ${status}). Isso pode ocorrer devido a bloqueios de Cloudflare ou CORS.`;
+          }
         }
-        throw axiosError;
+
+        return res.status(status).json({
+          message: errorMessage,
+          code: axiosError.response?.data?.code || "proxy_error",
+          details: axiosError.message
+        });
       }
     } catch (error: any) {
       console.error("Erro no proxy do WooCommerce:", error);
