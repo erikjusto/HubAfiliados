@@ -1024,6 +1024,44 @@ const StorefrontTab: React.FC<StorefrontTabProps> = ({ history, onAdminClick, is
         {selectedProduct ? (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="p-6 md:p-10">
+              {/* Dynamic Breadcrumb */}
+              <div className="mb-6 flex flex-wrap items-center gap-2 text-xs md:text-sm text-slate-500 font-medium select-none border-b border-slate-100 pb-4">
+                <span className="hover:text-blue-600 cursor-pointer" onClick={() => setSelectedProduct(null)}>Início</span>
+                {selectedProduct.path_from_root && selectedProduct.path_from_root.length > 0 ? (
+                  selectedProduct.path_from_root.map((cat: string, index: number) => (
+                    <span key={index} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span 
+                        className="hover:text-blue-600 cursor-pointer" 
+                        onClick={() => {
+                          setSelectedProduct(null);
+                          handleCategoryClick(cat);
+                        }}
+                      >
+                        {cat}
+                      </span>
+                    </span>
+                  ))
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span 
+                      className="hover:text-blue-600 cursor-pointer" 
+                      onClick={() => {
+                        setSelectedProduct(null);
+                        handleCategoryClick(selectedProduct.category || "Produtos");
+                      }}
+                    >
+                      {selectedProduct.category || "Produtos"}
+                    </span>
+                  </span>
+                )}
+                <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="text-slate-800 font-semibold truncate max-w-[200px] md:max-w-none">
+                  {selectedProduct.name}
+                </span>
+              </div>
+
               <div className="flex flex-col lg:flex-row gap-12">
                 {/* Product Image */}
                 <div className="lg:w-1/2 space-y-4">
