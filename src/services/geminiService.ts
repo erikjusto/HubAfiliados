@@ -27,10 +27,8 @@ const callGeminiProxy = async (action: string, prompt: string, config: any = {})
         prompt, 
         config: {
           provider: userConfig.provider,
-          // Gemini params
           model: userConfig.model,
           apiKey: userConfig.apiKey,
-          // OpenAI params
           openaiApiKey: userConfig.openaiApiKey,
           openaiModel: userConfig.openaiModel,
           ...config
@@ -38,24 +36,62 @@ const callGeminiProxy = async (action: string, prompt: string, config: any = {})
       })
     });
 
-    if (!response.ok) {
-      const errData = await response.json();
-      throw new Error(errData.error || 'Failed to call Gemini proxy');
+    if (response.ok) {
+      const result = await response.json();
+      logGeminiUsage({
+        action,
+        model: userConfig.model,
+        tokensPrompt: result.usageMetadata?.promptTokenCount || 0,
+        tokensCompletion: result.usageMetadata?.candidatesTokenCount || 0,
+        totalTokens: result.usageMetadata?.totalTokenCount || 0,
+        status: 'success'
+      });
+      return result;
     }
 
-    const result = await response.json();
-    
-    logGeminiUsage({
-      action,
-      model: userConfig.model,
-      tokensPrompt: result.usageMetadata?.promptTokenCount || 0,
-      tokensCompletion: result.usageMetadata?.candidatesTokenCount || 0,
-      totalTokens: result.usageMetadata?.totalTokenCount || 0,
-      status: 'success'
-    });
+    if (response.status === 404 || response.status === 500) {
+      throw new Error("PROXY_NOT_FOUND");
+    }
 
-    return result;
+    const errData = await response.json();
+    throw new Error(errData.error || 'Failed to call Gemini proxy');
+
   } catch (error: any) {
+    if (error.message === "PROXY_NOT_FOUND" || error.message?.includes("Failed to fetch") || error.message?.includes("404")) {
+      try {
+        console.warn(`[Gemini Fallback] Proxy not available. Calling direct Google AI API.`);
+        
+        let apiKey = userConfig.apiKey || import.meta.env.VITE_GEMINI_API_KEY || "";
+        let model = userConfig.model || "gemini-2.5-flash";
+
+        const directResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseMimeType: config.responseMimeType || "text/plain"
+            }
+          })
+        });
+
+        if (!directResponse.ok) {
+          throw new Error(`Direct Gemini call failed (${directResponse.status})`);
+        }
+
+        const directResult = await directResponse.json();
+        const generatedText = directResult.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+        return {
+          text: generatedText,
+          usageMetadata: directResult.usageMetadata || { promptTokenCount: 0, candidatesTokenCount: 0, totalTokenCount: 0 }
+        };
+      } catch (directErr: any) {
+        console.error("Direct Gemini fallback call failed:", directErr);
+        throw directErr;
+      }
+    }
+
     logGeminiUsage({
       action,
       model: userConfig.model,
