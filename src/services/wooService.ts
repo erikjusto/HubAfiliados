@@ -47,28 +47,70 @@ export const normalizePrice = (priceLabel: string): string => {
 };
 
 const wooProxy = async (config: WooCommerceConfig, endpoint: string, method: string = "GET", body?: any) => {
-  const response = await fetch("/api/woo/proxy", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ config, endpoint, method, body })
-  });
+  try {
+    const response = await fetch("/api/woo/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ config, endpoint, method, body })
+    });
 
-  if (!response.ok) {
+    if (response.ok) {
+      return await response.json();
+    }
+
+    if (response.status === 404) {
+      console.warn("Proxy endpoint 404 not found. Attempting direct fallback call...");
+      throw new Error("404_NOT_FOUND");
+    }
+
     let errorMessage = "Erro retornado pela API do WooCommerce.";
     const text = await response.text();
     try {
       const errorData = JSON.parse(text);
       errorMessage = errorData.message || errorMessage;
     } catch (e) {
-      // Se a resposta não for JSON (ex: erro 500 HTML do Vercel)
       console.error("Resposta não-JSON do proxy:", text);
       const snippet = text.substring(0, 100).replace(/\n/g, ' ');
       errorMessage = `Erro no servidor (Proxy): ${response.status}. Detalhe: ${snippet}`;
     }
     throw new Error(errorMessage);
-  }
 
-  return await response.json();
+  } catch (err: any) {
+    if (err.message === "404_NOT_FOUND" || err.message?.includes("Failed to fetch") || err.message?.includes("404")) {
+      let baseUrl = String(config.url).trim().replace(/\/$/, "");
+      if (!baseUrl.startsWith("http")) {
+        baseUrl = `https://${baseUrl}`;
+      }
+      let apiUrl = `${baseUrl}${endpoint}`;
+      const separator = apiUrl.includes("?") ? "&" : "?";
+      apiUrl = `${apiUrl}${separator}consumer_key=${config.consumerKey}&consumer_secret=${config.consumerSecret}`;
+      
+      const auth = btoa(`${config.consumerKey}:${config.consumerSecret}`);
+
+      console.log(`Direct WooCommerce API Call: ${method} ${apiUrl}`);
+      const directResponse = await fetch(apiUrl, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${auth}`
+        },
+        body: body ? JSON.stringify(body) : undefined
+      });
+
+      if (!directResponse.ok) {
+        let errorMsg = "Erro na chamada direta ao WooCommerce.";
+        try {
+          const directText = await directResponse.text();
+          const errJson = JSON.parse(directText);
+          errorMsg = errJson.message || errorMsg;
+        } catch (e) {}
+        throw new Error(errorMsg);
+      }
+
+      return await directResponse.json();
+    }
+    throw err;
+  }
 };
 
 export const createWooProduct = async (config: WooCommerceConfig, product: ProductData) => {
