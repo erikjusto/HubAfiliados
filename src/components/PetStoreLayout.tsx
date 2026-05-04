@@ -4,6 +4,8 @@ import { ShoppingBag, Star, RefreshCw, ShieldCheck, Heart, Truck, Gift, ChevronR
 
 interface PetStoreLayoutProps {
   history: ImportRecord[];
+  onAdminClick?: () => void;
+  isLoading?: boolean;
 }
 
 const PET_MENU = [
@@ -87,7 +89,7 @@ const PET_MENU = [
   }
 ];
 
-const PetStoreLayout: React.FC<PetStoreLayoutProps> = ({ history }) => {
+const PetStoreLayout: React.FC<PetStoreLayoutProps> = ({ history, onAdminClick, isLoading }) => {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -151,6 +153,14 @@ const PetStoreLayout: React.FC<PetStoreLayoutProps> = ({ history }) => {
             <button className="relative p-3 bg-teal-50 text-teal-600 hover:bg-teal-500 hover:text-white rounded-xl transition-all duration-300">
                <ShoppingBag className="w-6 h-6" />
             </button>
+            {onAdminClick && (
+              <button 
+                onClick={onAdminClick}
+                className="hidden md:flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition-colors h-11 shrink-0 select-none cursor-pointer"
+              >
+                Painel Admin
+              </button>
+            )}
             <button 
               className="lg:hidden p-2 text-slate-600"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

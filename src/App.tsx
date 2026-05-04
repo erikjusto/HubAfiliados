@@ -149,9 +149,14 @@ const App: React.FC = () => {
 
   // Se NÃO for admin, mostramos apenas o Storefront (Site Público)
   if (!isAdmin) {
+    const defaultTheme = localStorage.getItem('ml_default_theme') || 'standard';
     return (
       <div className="min-h-screen bg-[#ebebeb]">
-        <StorefrontTab history={history} onAdminClick={() => setShowLogin(true)} isLoading={isLoading} />
+        {defaultTheme === 'pet' ? (
+          <PetStoreLayout history={history} onAdminClick={() => setShowLogin(true)} isLoading={isLoading} />
+        ) : (
+          <StorefrontTab history={history} onAdminClick={() => setShowLogin(true)} isLoading={isLoading} />
+        )}
       </div>
     );
   }

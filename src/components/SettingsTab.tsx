@@ -25,6 +25,9 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ config, onSave, onRefreshProd
   const [formData, setFormData] = useState<WooCommerceConfig>(config);
   const [testing, setTesting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
+  const [defaultTheme, setDefaultTheme] = useState<string>(() => {
+    return localStorage.getItem('ml_default_theme') || 'standard';
+  });
 
   const handleTestOnly = async () => {
     setTesting(true);
@@ -40,8 +43,12 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ config, onSave, onRefreshProd
   };
 
   const handleSave = () => {
+    localStorage.setItem('ml_default_theme', defaultTheme);
     onSave(formData);
     setStatus({ type: 'success', msg: 'Configurações salvas com sucesso!' });
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   };
 
   return (
@@ -94,6 +101,21 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ config, onSave, onRefreshProd
                 className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-yellow-400 outline-none transition-all"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-1">
+              <Settings2 className="w-4 h-4 text-slate-400" />
+              Tema da Vitrine (Padrão para Frontend)
+            </label>
+            <select
+              value={defaultTheme}
+              onChange={e => setDefaultTheme(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-yellow-400 outline-none transition-all"
+            >
+              <option value="standard">TEMA PADRÃO (Site Geral / Vitrine Completa)</option>
+              <option value="pet">TEMA PET SHOP (Vitrine especializada para Pets)</option>
+            </select>
           </div>
 
           {status && (
