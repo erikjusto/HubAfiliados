@@ -32,8 +32,11 @@ const GeminiDashboard: React.FC = () => {
     setApiStatus({ status: 'loading', message: 'Verificando conexão com Google AI Studio...' });
     try {
       const res = await fetch('/api/gemini/status');
-      const text = await res.text();
+      if (res.status === 404) {
+        throw new Error("404_NOT_FOUND");
+      }
       
+      const text = await res.text();
       let data: any;
       try {
         data = JSON.parse(text);
@@ -49,15 +52,49 @@ const GeminiDashboard: React.FC = () => {
         serverKeyMasked: data.serverKeyMasked,
         testResponse: data.testResponse,
       });
-      // Auto-sync: if server has a key and frontend has none, load server key masked info
       if (data.hasServerKey && !config.apiKey) {
-        // Show that the server key is being used (don't expose the actual key)
         setConfig(prev => ({ ...prev, apiKey: '' }));
       }
     } catch (err: any) {
-      setApiStatus({ status: 'error', message: `Erro de rede: ${err.message}` });
+      if (err.message === "404_NOT_FOUND" || err.message?.includes("<!DOCTYPE html>") || err.message?.includes("Failed to fetch")) {
+        try {
+          const apiKey = config.apiKey || import.meta.env.VITE_GEMINI_API_KEY || "";
+          if (!apiKey) {
+            throw new Error("Chave de API do Gemini não configurada.");
+          }
+
+          const model = config.model || "gemini-2.5-flash";
+          const directRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: "Reponda apenas: CONECTADO" }] }]
+            })
+          });
+
+          if (!directRes.ok) {
+            throw new Error(`Erro retornado pelo Google AI Studio (${directRes.status}).`);
+          }
+
+          const directData = await directRes.json();
+          const testResponse = directData.candidates?.[0]?.content?.parts?.[0]?.text || "CONECTADO";
+
+          setApiStatus({
+            status: 'connected',
+            message: 'Conectado diretamente ao Google AI Studio!',
+            hasServerKey: true,
+            hasOpenAIKey: !!config.openaiApiKey,
+            serverKeyMasked: `${apiKey.slice(0, 4)}...${apiKey.slice(-4)}`,
+            testResponse: testResponse.trim(),
+          });
+        } catch (directErr: any) {
+          setApiStatus({ status: 'error', message: directErr.message });
+        }
+      } else {
+        setApiStatus({ status: 'error', message: `Erro de rede: ${err.message}` });
+      }
     }
-  }, [config.apiKey]);
+  }, [config.apiKey, config.model, config.openaiApiKey]);
 
   useEffect(() => {
     loadLogs();
