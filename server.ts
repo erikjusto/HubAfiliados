@@ -9,7 +9,7 @@ import { mlAgentService } from './services/mlAgentService.ts';
 import { GoogleGenAI } from "@google/genai";
 import axios from 'axios';
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const app = express();
 const PORT = 3000;
@@ -636,7 +636,8 @@ app.use(express.json());
         return res.status(status).json({
           message: errorMessage,
           code: axiosError.response?.data?.code || "proxy_error",
-          details: axiosError.message
+          details: axiosError.message,
+          data: axiosError.response?.data?.data
         });
       }
     } catch (error: any) {

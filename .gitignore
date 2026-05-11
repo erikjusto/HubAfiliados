@@ -22,16 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Environment variables
-.env
-.env.*
-
-# Scratch and temporary scripts
-scratch/
-scratch.ts
-check_cat.js
-check_cat.ts
-*.tsbuildinfo
-
-
